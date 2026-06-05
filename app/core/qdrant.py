@@ -78,14 +78,24 @@ async def search_vectors(
         if conditions:
             qfilter = models.Filter(must=conditions)
 
-    results = await client.search(
+    # qdrant-client 1.12+ removed client.search in favor of client.query_points
+    if hasattr(client, "query_points"):
+        results = await client.query_points(
+            collection_name=collection,
+            query=query_vector,
+            limit=top_k,
+            query_filter=qfilter,
+            score_threshold=score_threshold,
+        )
+        return list(results.points)
+    # Fallback for older client versions
+    return await client.search(
         collection_name=collection,
         query_vector=query_vector,
         limit=top_k,
         query_filter=qfilter,
         score_threshold=score_threshold,
     )
-    return results
 
 
 async def hybrid_search(

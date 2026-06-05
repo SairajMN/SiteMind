@@ -215,7 +215,7 @@ export default function PagesExplorerPage({ params }: { params: Promise<{ siteId
                         {/* Form Presence Indicator */}
                         <td className="py-3 px-4 text-center">
                           {page.has_form ? (
-                            <FormInput className="inline h-4 w-4 text-[var(--stitch-accent-cyan)]" title="Form Detected" />
+                            <FormInput aria-label="Form Detected" className="inline h-4 w-4 text-[var(--stitch-accent-cyan)]" />
                           ) : (
                             <span className="text-[var(--stitch-text-subtle)]">-</span>
                           )}
@@ -224,7 +224,7 @@ export default function PagesExplorerPage({ params }: { params: Promise<{ siteId
                         {/* Auth Presence Indicator */}
                         <td className="py-3 px-4 text-center">
                           {page.has_auth_hint ? (
-                            <Key className="inline h-4 w-4 text-[var(--stitch-warning)]" title="Authentication Signals Identified" />
+                            <Key aria-label="Authentication Signals Identified" className="inline h-4 w-4 text-[var(--stitch-warning)]" />
                           ) : (
                             <span className="text-[var(--stitch-text-subtle)]">-</span>
                           )}

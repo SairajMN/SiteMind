@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { BrainCircuit, Search, Bell, BookOpen, User, ChevronDown, Sparkles } from "lucide-react";
+import { BrainCircuit, Search, Bell, BookOpen, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const siteNavItems = [
+const siteLinks = [
   { href: "", label: "Overview" },
   { href: "/dag", label: "DAG" },
   { href: "/knowledge", label: "Knowledge" },
@@ -132,7 +132,7 @@ export function TopNav({ siteId }: TopNavProps) {
             </span>
           </button>
 
-          {/* User profile dropdown placeholder */}
+          {/*  profile dropdown placeholder */}
           <div className="flex items-center gap-2 border-l border-[var(--stitch-border)] pl-3">
             <button
               onClick={() => alert("SiteMind Enterprise profile dashboard. Connected as admin@sitemind.io")}

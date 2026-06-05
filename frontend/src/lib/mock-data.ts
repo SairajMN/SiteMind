@@ -7,7 +7,6 @@ import {
   EvaluationSummary,
   DagRunDetail,
   AskResponse,
-  JobResponse
 } from "./api-client";
 
 export interface MockSiteData {
@@ -97,12 +96,12 @@ export const MOCK_SITES: Record<string, MockSiteData> = {
       {
         id: "str-w1",
         site_id: "stripe",
-        name: "User Authentication (Login)",
+        name: " Authentication (Login)",
         summary: "Authenticates a user into the dashboard. Discovered via Stripe Sign-in screen form mapping.",
         confidence: 0.97,
         created_at: "2026-06-05T20:02:00Z",
         steps: [
-          { id: "str-w1-s1", step_index: 1, page_id: "str-p3", action_type: "navigate", description: "User navigates to login page at dashboard.stripe.com/login", confidence: 1.0 },
+          { id: "str-w1-s1", step_index: 1, page_id: "str-p3", action_type: "navigate", description: " navigates to login page at dashboard.stripe.com/login", confidence: 1.0 },
           { id: "str-w1-s2", step_index: 2, page_id: "str-p3", action_type: "fill", selector: "input[name='email']", description: "Enters user email address credentials", confidence: 0.95 },
           { id: "str-w1-s3", step_index: 3, page_id: "str-p3", action_type: "click", selector: "button[type='submit']", endpoint_id: "str-e1", description: "Submits credentials to /v1/auth/login and receives session JWT", confidence: 0.98 }
         ]
@@ -115,7 +114,7 @@ export const MOCK_SITES: Record<string, MockSiteData> = {
         confidence: 0.94,
         created_at: "2026-06-05T20:03:00Z",
         steps: [
-          { id: "str-w2-s1", step_index: 1, page_id: "str-p4", action_type: "navigate", description: "User visits payment gateway screen", confidence: 1.0 },
+          { id: "str-w2-s1", step_index: 1, page_id: "str-p4", action_type: "navigate", description: " visits payment gateway screen", confidence: 1.0 },
           { id: "str-w2-s2", step_index: 2, page_id: "str-p4", action_type: "fill", selector: "input[name='card_number']", description: "Enters Visa/Mastercard credentials", confidence: 0.93 },
           { id: "str-w2-s3", step_index: 3, page_id: "str-p4", action_type: "click", selector: "button.submit-btn", endpoint_id: "str-e3", description: "Triggers API create payment method request", confidence: 0.95 },
           { id: "str-w2-s4", step_index: 4, page_id: "str-p4", action_type: "network_hook", endpoint_id: "str-e2", description: "Invokes /v1/payment_intents confirmation code and completes payment verification", confidence: 0.92 }
@@ -316,7 +315,7 @@ export const MOCK_SITES: Record<string, MockSiteData> = {
       {
         id: "git-w1",
         site_id: "github",
-        name: "User Login & Redirect",
+        name: " Login & Redirect",
         summary: "Traditional authentication workflow with session establishment redirects.",
         confidence: 0.98,
         created_at: "2026-06-05T20:01:00Z",

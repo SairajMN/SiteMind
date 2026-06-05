@@ -6,14 +6,10 @@ import {
   ChevronRight,
   GitCommit,
   ExternalLink,
-  HelpCircle,
-  Clock,
-  ArrowRight,
   Link,
   Compass,
   Cpu,
   Layers,
-  ChevronDown
 } from "lucide-react";
 import { SiteScaffold } from "@/components/layout/SiteScaffold";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -98,7 +94,7 @@ export default function WorkflowsPage({ params }: { params: Promise<{ siteId: st
       description="Multi-step user journeys reverse-engineered from observed navigation paths, interactive form structures, and API network payloads."
     >
       <div className="flex flex-col gap-6 lg:grid lg:grid-cols-12">
-        
+
         {/* Left Col: List of workflow cards */}
         <div className="lg:col-span-4 space-y-4">
           <div className="text-xs text-[var(--stitch-text-subtle)] font-medium px-1">
@@ -162,9 +158,9 @@ export default function WorkflowsPage({ params }: { params: Promise<{ siteId: st
                   <Badge variant="outline" className="font-mono text-xs">{activeWorkflow.steps.length} steps</Badge>
                 </div>
               </CardHeader>
-              
+
               <CardContent className="pt-6">
-                
+
                 {/* Visual Step Timeline */}
                 <div className="relative border-l border-[var(--stitch-border)] pl-6 ml-3 space-y-6">
                   {activeWorkflow.steps.map((step) => {
@@ -177,7 +173,7 @@ export default function WorkflowsPage({ params }: { params: Promise<{ siteId: st
                         onClick={() => inspectStepEvidence(step)}
                         className={cn(
                           "relative rounded-lg p-3 border transition-all cursor-pointer",
-                          isHovered 
+                          isHovered
                             ? "bg-[var(--stitch-surface-hover)] border-[var(--stitch-border-strong)] shadow-sm"
                             : "bg-[var(--stitch-surface)]/40 border-[var(--stitch-border)]"
                         )}
@@ -196,7 +192,7 @@ export default function WorkflowsPage({ params }: { params: Promise<{ siteId: st
                               </span>
                               {step.confidence !== undefined && <ConfidenceBadge value={step.confidence} size="sm" />}
                             </div>
-                            
+
                             <p className="text-xs text-[var(--stitch-text)] font-semibold leading-relaxed">
                               {step.description}
                             </p>
@@ -214,7 +210,7 @@ export default function WorkflowsPage({ params }: { params: Promise<{ siteId: st
                               </div>
                             )}
                           </div>
-                          
+
                           <ChevronRight className={cn(
                             "h-4 w-4 text-[var(--stitch-text-subtle)] transition-all mt-1 shrink-0",
                             isHovered ? "text-[var(--stitch-accent-cyan)] translate-x-0.5" : ""

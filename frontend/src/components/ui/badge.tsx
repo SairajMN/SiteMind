@@ -9,6 +9,8 @@ const badgeVariants = cva(
       variant: {
         default:
           "border-[var(--stitch-border-accent)] bg-[var(--stitch-accent-cyan-dim)] text-[var(--stitch-accent-cyan)]",
+        cyan:
+          "border-[var(--stitch-accent-cyan)]/30 bg-[var(--stitch-accent-cyan-dim)] text-[var(--stitch-accent-cyan)]",
         secondary:
           "border-[var(--stitch-border)] bg-[var(--stitch-surface-active)] text-[var(--stitch-text-muted)]",
         violet:
