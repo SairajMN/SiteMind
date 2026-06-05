@@ -16,7 +16,6 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Badge } from "@/components/ui/badge";
 import { ConfidenceBadge } from "@/components/ConfidenceBadge";
 import { getWorkflows, type WorkflowSummary, type WorkflowStepSummary } from "@/lib/api-client";
-import { getMockSite } from "@/lib/mock-data";
 import { useArtifact } from "@/context/ArtifactContext";
 import { cn } from "@/lib/utils";
 
@@ -43,17 +42,8 @@ export default function WorkflowsPage({ params }: { params: Promise<{ siteId: st
         }
         setLoading(false);
       })
-      .catch(() => {
-        // Fallback to mock data
-        const mock = getMockSite(siteId);
-        if (mock) {
-          setWorkflows(mock.workflows);
-          if (mock.workflows.length > 0) {
-            setActiveWorkflowId(mock.workflows[0].id);
-          }
-        } else {
-          setError("Failed to load workflows.");
-        }
+      .catch((err: unknown) => {
+        setError(err instanceof Error ? err.message : "Failed to load data.");
         setLoading(false);
       });
   }, [siteId]);

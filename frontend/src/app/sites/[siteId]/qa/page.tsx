@@ -21,7 +21,6 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ConfidenceBadge } from "@/components/ConfidenceBadge";
 import { askQuestion, type AskResponse } from "@/lib/api-client";
-import { getMockSite } from "@/lib/mock-data";
 import { useArtifact } from "@/context/ArtifactContext";
 import { cn } from "@/lib/utils";
 
@@ -47,14 +46,12 @@ export default function QaPage({ params }: { params: Promise<{ siteId: string }>
   const [error, setError] = useState<string | null>(null);
 
   const { setSelectedArtifact } = useArtifact();
-  const mock = getMockSite(siteId);
-
   // Prepopulate with an initial welcoming message
   useEffect(() => {
     setMessages([
       {
         role: "assistant",
-        content: `Hello! I am SiteMind Q&A. I have indexed ${mock?.progress.chunks_indexed || 120} vector chunks representing page DOMs, workflows, and network API specifications for this site. Ask me anything about its layout, fields, or authorization schemes!`
+        content: `Hello! I am SiteMind Q&A. Ask me anything about this site's pages, forms, endpoints, and authorization schemes!`
       }
     ]);
   }, [siteId]);
@@ -72,54 +69,12 @@ export default function QaPage({ params }: { params: Promise<{ siteId: string }>
       const answer = await askQuestion(siteId, { question: qText.trim() });
       setMessages(prev => [...prev, { role: "assistant", content: answer.answer_text || "No response generated.", responseObj: answer }]);
     } catch (err: unknown) {
-      console.warn("API Offline, querying mock dataset...", err);
-      
-      // Look up mock Q&A response
-      const normalizedQ = qText.toLowerCase().trim();
-      let matchedResponse: AskResponse | undefined;
-
-      if (mock && mock.qaResponses) {
-        for (const key of Object.keys(mock.qaResponses)) {
-          if (normalizedQ.includes(key.toLowerCase()) || key.toLowerCase().includes(normalizedQ)) {
-            matchedResponse = mock.qaResponses[key];
-            break;
-          }
-        }
-      }
-
-      // If no preset matches, create a smart dynamic fallback
-      if (!matchedResponse) {
-        matchedResponse = {
-          answer_id: "fallback-ans",
-          site_id: siteId,
-          question: qText,
-          answer_text: `Based on my analysis of ${mock?.name || "the crawled site"}, I identified ${mock?.pages.length || 3} pages and ${mock?.endpoints.length || 2} network endpoints. The question "${qText}" relates to observed DOM layouts, but no specific matching credentials workflow steps were index-mapped. Adjust your query or refer to the API Specs tab.`,
-          confidence: 0.82,
-          critic_status: "passed",
-          citations: mock ? [
-            { source_url: mock.pages[0].url, artifact_type: "pages", snippet: mock.pages[0].title, confidence: 0.90, score: 0.85 }
-          ] : [],
-          created_at: new Date().toISOString()
-        };
-      }
-
-      // Simulate typing speed
-      setTimeout(() => {
-        setMessages(prev => [
-          ...prev,
-          {
-            role: "assistant",
-            content: matchedResponse!.answer_text || "",
-            responseObj: matchedResponse
-          }
-        ]);
-        setLoading(false);
-      }, 1000);
-      return;
-    }
-
+      setError(err instanceof Error ? err.message : "Failed to get answer.");
     setLoading(false);
-  };
+    return;
+  }
+  setLoading(false);
+};
 
   const handleInspectCitation = (cit: any) => {
     // Map citation values to right inspect model

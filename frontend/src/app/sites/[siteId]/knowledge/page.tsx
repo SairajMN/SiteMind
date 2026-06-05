@@ -20,7 +20,6 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { ConfidenceBadge } from "@/components/ConfidenceBadge";
 import { getPages, getForms, getEndpoints, getWorkflows } from "@/lib/api-client";
-import { getMockSite } from "@/lib/mock-data";
 import { useArtifact } from "@/context/ArtifactContext";
 import { cn } from "@/lib/utils";
 
@@ -59,132 +58,21 @@ export default function KnowledgePage({ params }: { params: Promise<{ siteId: st
     setError(null);
 
     Promise.all([
-      getPages(siteId).catch(() => null),
-      getForms(siteId).catch(() => null),
-      getEndpoints(siteId).catch(() => null),
-      getWorkflows(siteId).catch(() => null)
-    ])
-      .then(([pagesRes, formsRes, endpointsRes, workflowsRes]) => {
-        let compiled: UnifiedArtifact[] = [];
-
-        // Check if API resolved data, else load mock fallback
-        const hasApiData = pagesRes || formsRes || endpointsRes || workflowsRes;
-
-        if (hasApiData) {
-          if (pagesRes?.pages) {
-            pagesRes.pages.forEach(p => {
-              compiled.push({
-                id: p.id,
-                type: "page",
-                title: p.title || "Page Artifact",
-                url: p.url,
-                confidence: 0.95,
-                snippet: `Discovered depth ${p.depth}. Contains forms: ${p.has_form}, authentication triggers: ${p.has_auth_hint}.`,
-                meta: { depth: p.depth, status: p.status_code || 200 },
-                rawData: p
-              });
-            });
-          }
-          if (formsRes?.forms) {
-            formsRes.forms.forEach(f => {
-              compiled.push({
-                id: f.id,
-                type: "form",
-                title: `Form: ${f.form_name || "unnamed"}`,
-                url: f.action_url || "",
-                confidence: f.confidence || 0.9,
-                snippet: `Form POST request to ${f.action_url}. Contains ${f.fields.length} input field types.`,
-                meta: { method: f.method, fieldsCount: f.fields.length },
-                rawData: f
-              });
-            });
-          }
-          if (endpointsRes?.endpoints) {
-            endpointsRes.endpoints.forEach(e => {
-              compiled.push({
-                id: e.id,
-                type: "endpoint",
-                title: `${e.method || "GET"} ${e.request_url}`,
-                url: e.request_url,
-                confidence: e.confidence || 0.85,
-                snippet: `Observed network request endpoint with response status ${e.status_code}. Type: ${e.request_type}.`,
-                meta: { method: e.method, status: e.status_code },
-                rawData: e
-              });
-            });
-          }
-          if (workflowsRes?.workflows) {
-            workflowsRes.workflows.forEach(w => {
-              compiled.push({
-                id: w.id,
-                type: "workflow",
-                title: w.name || "Inferred workflow",
-                url: "",
-                confidence: w.confidence || 0.9,
-                snippet: w.summary || `Multi-step user action timeline with ${w.steps.length} sequential operations.`,
-                meta: { stepsCount: w.steps.length },
-                rawData: w
-              });
-            });
-          }
-        } else {
-          // Mock Data Fallback
-          const mock = getMockSite(siteId);
-          if (mock) {
-            mock.pages.forEach(p => {
-              compiled.push({
-                id: p.id,
-                type: "page",
-                title: p.title || "Page",
-                url: p.url,
-                confidence: 0.96,
-                snippet: `Crawled page at depth ${p.depth}. Forms: ${p.has_form ? "Yes" : "No"}, Auth: ${p.has_auth_hint ? "Yes" : "No"}. Mapped DOM hierarchy.`,
-                meta: { depth: p.depth, status: p.status_code || 200 },
-                rawData: p
-              });
-            });
-            mock.forms.forEach(f => {
-              compiled.push({
-                id: f.id,
-                type: "form",
-                title: `Form: ${f.form_name || "unnamed"}`,
-                url: f.action_url || "",
-                confidence: f.confidence || 0.95,
-                snippet: `Interactive form found redirecting to ${f.action_url}. Mapped input selector parameters: ${f.fields.map(fd => fd.name).join(", ")}.`,
-                meta: { method: f.method, fieldsCount: f.fields.length },
-                rawData: f
-              });
-            });
-            mock.endpoints.forEach(e => {
-              compiled.push({
-                id: e.id,
-                type: "endpoint",
-                title: `${e.method || "GET"} ${e.request_url}`,
-                url: e.request_url,
-                confidence: e.confidence || 0.92,
-                snippet: `Observed ${e.request_type} request to ${e.request_url} resulting in HTTP status ${e.status_code}.`,
-                meta: { method: e.method, status: e.status_code },
-                rawData: e
-              });
-            });
-            mock.workflows.forEach(w => {
-              compiled.push({
-                id: w.id,
-                type: "workflow",
-                title: w.name || "User Journey",
-                url: "",
-                confidence: w.confidence || 0.94,
-                snippet: w.summary || `Structured user workflow representing ${w.steps.length} steps.`,
-                meta: { stepsCount: w.steps.length },
-                rawData: w
-              });
-            });
-          }
-        }
-        setArtifacts(compiled);
-        setLoading(false);
-      })
-      .catch((err) => {
+            getPages(siteId).catch(() => null),
+            getForms(siteId).catch(() => null),
+            getEndpoints(siteId).catch(() => null),
+            getWorkflows(siteId).catch(() => null)
+          ])
+            .then(([pagesRes, formsRes, endpointsRes, workflowsRes]) => {
+              const compiled: UnifiedArtifact[] = [];
+              if (pagesRes?.pages) { pagesRes.pages.forEach(p => { compiled.push({ id: p.id, type: "page" as const, title: p.title || "Page Artifact", url: p.url, confidence: 0.95, snippet: `Discovered depth ${p.depth}. Contains forms: ${p.has_form}, authentication triggers: ${p.has_auth_hint}.`, meta: { depth: p.depth, status: p.status_code || 200 }, rawData: p }); }); }
+              if (formsRes?.forms) { formsRes.forms.forEach(f => { compiled.push({ id: f.id, type: "form" as const, title: `Form: ${f.form_name || "unnamed"}`, url: f.action_url || "", confidence: f.confidence || 0.9, snippet: `Form POST request to ${f.action_url}. Contains ${f.fields.length} input field types.`, meta: { method: f.method, fieldsCount: f.fields.length }, rawData: f }); }); }
+              if (endpointsRes?.endpoints) { endpointsRes.endpoints.forEach(e => { compiled.push({ id: e.id, type: "endpoint" as const, title: `${e.method || "GET"} ${e.request_url}`, url: e.request_url, confidence: e.confidence || 0.85, snippet: `Observed network request endpoint with response status ${e.status_code}. Type: ${e.request_type}.`, meta: { method: e.method, status: e.status_code }, rawData: e }); }); }
+              if (workflowsRes?.workflows) { workflowsRes.workflows.forEach(w => { compiled.push({ id: w.id, type: "workflow" as const, title: w.name || "Inferred workflow", url: "", confidence: w.confidence || 0.9, snippet: w.summary || `Multi-step user action timeline with ${w.steps.length} sequential operations.`, meta: { stepsCount: w.steps.length }, rawData: w }); }); }
+              setArtifacts(compiled);
+              setLoading(false);
+            })
+            .catch((err) => {
         setError(err.message || "Failed to load index.");
         setLoading(false);
       });

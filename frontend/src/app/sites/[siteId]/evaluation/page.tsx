@@ -18,7 +18,6 @@ import {
 } from "lucide-react";
 import { SiteScaffold } from "@/components/layout/SiteScaffold";
 import { getEvaluations, type EvaluationSummary, type MetricSchema } from "@/lib/api-client";
-import { getMockSite } from "@/lib/mock-data";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
@@ -81,14 +80,8 @@ export default function EvaluationPage({ params }: { params: Promise<{ siteId: s
         setEvaluations(res.evaluations);
         setLoading(false);
       })
-      .catch(() => {
-        // Fallback to mock data
-        const mock = getMockSite(siteId);
-        if (mock && mock.evaluations) {
-          setEvaluations(mock.evaluations);
-        } else {
-          setError("Failed to load evaluations.");
-        }
+      .catch((err: unknown) => {
+        setError(err instanceof Error ? err.message : "Failed to load data.");
         setLoading(false);
       });
   }, [siteId]);

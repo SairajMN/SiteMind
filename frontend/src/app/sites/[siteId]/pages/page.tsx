@@ -14,7 +14,6 @@ import {
 } from "lucide-react";
 import { SiteScaffold } from "@/components/layout/SiteScaffold";
 import { getPages, type PageSummary } from "@/lib/api-client";
-import { getMockSite } from "@/lib/mock-data";
 import { useArtifact } from "@/context/ArtifactContext";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -24,7 +23,6 @@ import { cn } from "@/lib/utils";
 export default function PagesExplorerPage({ params }: { params: Promise<{ siteId: string }> }) {
   const { siteId } = use(params);
 
-  // States
   const [pages, setPages] = useState<PageSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -43,19 +41,13 @@ export default function PagesExplorerPage({ params }: { params: Promise<{ siteId
         setPages(res.pages);
         setLoading(false);
       })
-      .catch(() => {
-        // Mock fallback
-        const mock = getMockSite(siteId);
-        if (mock) {
-          setPages(mock.pages);
-        } else {
-          setError("Failed to load page entries.");
-        }
+      .catch((err: unknown) => {
+        setError(err instanceof Error ? err.message : "Failed to load page entries.");
+        setPages([]);
         setLoading(false);
       });
   }, [siteId]);
 
-  // Sort and filter pages
   const handleSort = (field: keyof PageSummary) => {
     if (sortField === field) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
@@ -67,33 +59,25 @@ export default function PagesExplorerPage({ params }: { params: Promise<{ siteId
 
   const processedPages = pages
     .filter((p) => {
-      // Search filter
       const matchesSearch =
         p.url.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (p.title || "").toLowerCase().includes(searchQuery.toLowerCase());
-
-      // Tab filter
       if (filterType === "forms") return matchesSearch && p.has_form;
       if (filterType === "auth") return matchesSearch && p.has_auth_hint;
-      if (filterType === "broken") return matchesSearch && p.status_code && p.status_code >= 400;
+      if (filterType === "broken") {
+        return matchesSearch && p.status_code !== undefined && p.status_code >= 400;
+      }
       return matchesSearch;
     })
     .sort((a, b) => {
-      let valA = a[sortField];
-      let valB = b[sortField];
-
+      const valA = a[sortField];
+      const valB = b[sortField];
       if (typeof valA === "string" && typeof valB === "string") {
-        return sortOrder === "asc"
-          ? valA.localeCompare(valB)
-          : valB.localeCompare(valA);
+        return sortOrder === "asc" ? valA.localeCompare(valB) : valB.localeCompare(valA);
       }
-      
-      // Numeric or Boolean
       const numA = typeof valA === "boolean" ? (valA ? 1 : 0) : (valA ?? 0);
       const numB = typeof valB === "boolean" ? (valB ? 1 : 0) : (valB ?? 0);
-      return sortOrder === "asc"
-        ? (numA > numB ? 1 : -1)
-        : (numA < numB ? 1 : -1);
+      return sortOrder === "asc" ? (numA > numB ? 1 : -1) : (numA < numB ? 1 : -1);
     });
 
   return (
@@ -103,11 +87,7 @@ export default function PagesExplorerPage({ params }: { params: Promise<{ siteId
       description="Database of crawled HTML pages, including link hierarchies, visual structures, form nodes, and page-level metadata."
     >
       <div className="space-y-4">
-        
-        {/* Table Filters & Search */}
         <div className="flex flex-col sm:flex-row gap-3 items-center justify-between text-xs">
-          
-          {/* Quick Search */}
           <div className="relative w-full sm:max-w-xs">
             <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[var(--stitch-text-subtle)]" />
             <Input
@@ -117,8 +97,6 @@ export default function PagesExplorerPage({ params }: { params: Promise<{ siteId
               className="pl-8 bg-[var(--stitch-bg-elevated)] h-9 text-xs border-[var(--stitch-border)]"
             />
           </div>
-
-          {/* Filtering buttons */}
           <div className="flex border border-[var(--stitch-border)] rounded-md bg-[var(--stitch-bg-elevated)] p-0.5 text-xs font-medium w-full sm:w-auto overflow-x-auto justify-around">
             {(["all", "forms", "auth", "broken"] as const).map((t) => (
               <button
@@ -137,14 +115,15 @@ export default function PagesExplorerPage({ params }: { params: Promise<{ siteId
           </div>
         </div>
 
-        {/* Compact Table */}
         <div className="rounded-xl border border-[var(--stitch-border)] bg-[var(--stitch-bg-elevated)] overflow-hidden">
           {loading ? (
             <div className="flex min-h-[200px] items-center justify-center text-xs text-[var(--stitch-text-muted)]">
               Querying database registry...
             </div>
           ) : error ? (
-            <div className="p-4 text-xs text-[var(--stitch-error)] text-center">{error}</div>
+            <div className="rounded-lg border border-[var(--stitch-error)]/30 bg-[var(--stitch-error)]/5 p-4 text-xs text-[var(--stitch-error)]">
+              {error}
+            </div>
           ) : processedPages.length === 0 ? (
             <div className="p-8 text-xs text-[var(--stitch-text-subtle)] text-center">
               No pages match the active query.
@@ -173,7 +152,8 @@ export default function PagesExplorerPage({ params }: { params: Promise<{ siteId
                 </thead>
                 <tbody className="divide-y divide-[var(--stitch-border)]">
                   {processedPages.map((page) => {
-                    const isSelected = selectedArtifact?.type === "page" && selectedArtifact.data.id === page.id;
+                    const isSelected =
+                      selectedArtifact?.type === "page" && selectedArtifact.data.id === page.id;
                     return (
                       <tr
                         key={page.id}
@@ -183,22 +163,15 @@ export default function PagesExplorerPage({ params }: { params: Promise<{ siteId
                           isSelected ? "bg-[var(--stitch-surface-active)]" : ""
                         )}
                       >
-                        {/* Title */}
                         <td className="py-3 px-4 font-medium text-[var(--stitch-text)] max-w-xs truncate">
                           {page.title || "Untitled page"}
                         </td>
-                        
-                        {/* URL */}
                         <td className="py-3 px-4 font-mono text-[11px] text-[var(--stitch-accent-cyan)] max-w-[240px] truncate">
                           {page.url}
                         </td>
-                        
-                        {/* Depth */}
                         <td className="py-3 px-4 text-center font-mono font-medium text-[var(--stitch-text-muted)]">
                           d{page.depth}
                         </td>
-                        
-                        {/* Status Code */}
                         <td className="py-3 px-4 text-center">
                           <span
                             className={cn(
@@ -211,8 +184,6 @@ export default function PagesExplorerPage({ params }: { params: Promise<{ siteId
                             {page.status_code || 200}
                           </span>
                         </td>
-                        
-                        {/* Form Presence Indicator */}
                         <td className="py-3 px-4 text-center">
                           {page.has_form ? (
                             <FormInput aria-label="Form Detected" className="inline h-4 w-4 text-[var(--stitch-accent-cyan)]" />
@@ -220,8 +191,6 @@ export default function PagesExplorerPage({ params }: { params: Promise<{ siteId
                             <span className="text-[var(--stitch-text-subtle)]">-</span>
                           )}
                         </td>
-                        
-                        {/* Auth Presence Indicator */}
                         <td className="py-3 px-4 text-center">
                           {page.has_auth_hint ? (
                             <Key aria-label="Authentication Signals Identified" className="inline h-4 w-4 text-[var(--stitch-warning)]" />
@@ -229,8 +198,6 @@ export default function PagesExplorerPage({ params }: { params: Promise<{ siteId
                             <span className="text-[var(--stitch-text-subtle)]">-</span>
                           )}
                         </td>
-
-                        {/* Interactive Inspection arrow */}
                         <td className="py-3 px-4 text-right">
                           <ChevronRight className="inline h-4 w-4 text-[var(--stitch-text-subtle)] group-hover:text-[var(--stitch-accent-cyan)] group-hover:translate-x-0.5 transition-all" />
                         </td>

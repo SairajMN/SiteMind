@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { SiteScaffold } from "@/components/layout/SiteScaffold";
 import { getEndpoints, type EndpointSummary } from "@/lib/api-client";
-import { getMockSite } from "@/lib/mock-data";
 import { useArtifact } from "@/context/ArtifactContext";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -43,25 +42,18 @@ export default function EndpointsExplorerPage({ params }: { params: Promise<{ si
         setEndpoints(res.endpoints);
         setLoading(false);
       })
-      .catch(() => {
-        // Fallback to mock data
-        const mock = getMockSite(siteId);
-        if (mock) {
-          setEndpoints(mock.endpoints);
-        } else {
-          setError("Failed to load endpoint entries.");
-        }
+      .catch((err: unknown) => {
+        setError(err instanceof Error ? err.message : "Failed to load endpoint entries.");
+        setEndpoints([]);
         setLoading(false);
       });
   }, [siteId]);
 
   const filteredEndpoints = endpoints.filter((ep) => {
-    // Search query filter
     const matchesSearch =
       ep.request_url.toLowerCase().includes(searchQuery.toLowerCase()) ||
       (ep.request_type || "").toLowerCase().includes(searchQuery.toLowerCase());
 
-    // Method filter
     if (methodFilter === "GET") return matchesSearch && ep.method === "GET";
     if (methodFilter === "POST") return matchesSearch && ep.method === "POST";
     if (methodFilter === "graphql") {
@@ -75,16 +67,11 @@ export default function EndpointsExplorerPage({ params }: { params: Promise<{ si
 
   const getMethodBadgeClass = (method?: string) => {
     switch (method?.toUpperCase()) {
-      case "GET":
-        return "bg-cyan-950/40 text-cyan-400 border-cyan-800/50";
-      case "POST":
-        return "bg-purple-950/40 text-purple-400 border-purple-800/50";
-      case "PUT":
-        return "bg-amber-950/40 text-amber-400 border-amber-800/50";
-      case "DELETE":
-        return "bg-red-950/40 text-red-400 border-red-800/50";
-      default:
-        return "bg-slate-950/40 text-slate-400 border-slate-800/50";
+      case "GET": return "bg-cyan-950/40 text-cyan-400 border-cyan-800/50";
+      case "POST": return "bg-purple-950/40 text-purple-400 border-purple-800/50";
+      case "PUT": return "bg-amber-950/40 text-amber-400 border-amber-800/50";
+      case "DELETE": return "bg-red-950/40 text-red-400 border-red-800/50";
+      default: return "bg-slate-950/40 text-slate-400 border-slate-800/50";
     }
   };
 
@@ -95,11 +82,8 @@ export default function EndpointsExplorerPage({ params }: { params: Promise<{ si
       description="Reverse-engineered endpoint registry. Maps REST and GraphQL network API calls intercepted during Chromium page runs, including payload schemas."
     >
       <div className="space-y-4">
-        
-        {/* Table Filters & Search */}
+
         <div className="flex flex-col sm:flex-row gap-3 items-center justify-between text-xs">
-          
-          {/* Quick Search */}
           <div className="relative w-full sm:max-w-xs">
             <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-[var(--stitch-text-subtle)]" />
             <Input
@@ -110,7 +94,6 @@ export default function EndpointsExplorerPage({ params }: { params: Promise<{ si
             />
           </div>
 
-          {/* Filtering buttons */}
           <div className="flex border border-[var(--stitch-border)] rounded-md bg-[var(--stitch-bg-elevated)] p-0.5 text-xs font-medium w-full sm:w-auto overflow-x-auto justify-around">
             {(["all", "GET", "POST", "graphql"] as const).map((t) => (
               <button
@@ -129,14 +112,15 @@ export default function EndpointsExplorerPage({ params }: { params: Promise<{ si
           </div>
         </div>
 
-        {/* Compact Table */}
         <div className="rounded-xl border border-[var(--stitch-border)] bg-[var(--stitch-bg-elevated)] overflow-hidden">
           {loading ? (
             <div className="flex min-h-[200px] items-center justify-center text-xs text-[var(--stitch-text-muted)]">
               Querying intercepted traces...
             </div>
           ) : error ? (
-            <div className="p-4 text-xs text-[var(--stitch-error)] text-center">{error}</div>
+            <div className="rounded-lg border border-[var(--stitch-error)]/30 bg-[var(--stitch-error)]/5 p-4 text-xs text-[var(--stitch-error)]">
+              {error}
+            </div>
           ) : filteredEndpoints.length === 0 ? (
             <div className="p-8 text-xs text-[var(--stitch-text-subtle)] text-center">
               No network endpoints matched the query.
@@ -156,7 +140,8 @@ export default function EndpointsExplorerPage({ params }: { params: Promise<{ si
                 </thead>
                 <tbody className="divide-y divide-[var(--stitch-border)] font-mono text-[11px]">
                   {filteredEndpoints.map((ep) => {
-                    const isSelected = selectedArtifact?.type === "endpoint" && selectedArtifact.data.id === ep.id;
+                    const isSelected =
+                      selectedArtifact?.type === "endpoint" && selectedArtifact.data.id === ep.id;
                     return (
                       <tr
                         key={ep.id}
@@ -166,7 +151,6 @@ export default function EndpointsExplorerPage({ params }: { params: Promise<{ si
                           isSelected ? "bg-[var(--stitch-surface-active)]" : ""
                         )}
                       >
-                        {/* Method */}
                         <td className="py-3 px-4">
                           <span
                             className={cn(
@@ -177,13 +161,9 @@ export default function EndpointsExplorerPage({ params }: { params: Promise<{ si
                             {ep.method || "GET"}
                           </span>
                         </td>
-                        
-                        {/* Endpoint Path */}
                         <td className="py-3 px-4 text-[var(--stitch-text)] group-hover:text-[var(--stitch-accent-cyan)] transition-colors max-w-sm truncate break-all select-all font-mono">
                           {ep.request_url}
                         </td>
-                        
-                        {/* HTTP Status Code */}
                         <td className="py-3 px-4 text-center">
                           <span
                             className={cn(
@@ -196,13 +176,9 @@ export default function EndpointsExplorerPage({ params }: { params: Promise<{ si
                             {ep.status_code || 200}
                           </span>
                         </td>
-                        
-                        {/* Confidence Score */}
                         <td className="py-3 px-4 text-center">
                           {ep.confidence !== undefined && <ConfidenceBadge value={ep.confidence} />}
                         </td>
-                        
-                        {/* Observation Category */}
                         <td className="py-3 px-4">
                           <Badge
                             variant={ep.observation_type === "observed" ? "cyan" : "secondary"}
@@ -211,8 +187,6 @@ export default function EndpointsExplorerPage({ params }: { params: Promise<{ si
                             {ep.observation_type || "observed"}
                           </Badge>
                         </td>
-
-                        {/* Interactive Inspection arrow */}
                         <td className="py-3 px-4 text-right">
                           <ChevronRight className="inline h-4 w-4 text-[var(--stitch-text-subtle)] group-hover:text-[var(--stitch-accent-cyan)] group-hover:translate-x-0.5 transition-all" />
                         </td>

@@ -13,7 +13,6 @@ import {
 } from "lucide-react";
 import { SiteScaffold } from "@/components/layout/SiteScaffold";
 import { getForms, type FormSummary } from "@/lib/api-client";
-import { getMockSite } from "@/lib/mock-data";
 import { useArtifact } from "@/context/ArtifactContext";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -37,13 +36,9 @@ export default function FormsAnalyzerPage({ params }: { params: Promise<{ siteId
         setForms(res.forms);
         setLoading(false);
       })
-      .catch(() => {
-        const mock = getMockSite(siteId);
-        if (mock) {
-          setForms(mock.forms);
-        } else {
-          setError("Failed to load form entries.");
-        }
+      .catch((err: unknown) => {
+        setError(err instanceof Error ? err.message : "Failed to load form entries.");
+        setForms([]);
         setLoading(false);
       });
   }, [siteId]);
@@ -55,13 +50,15 @@ export default function FormsAnalyzerPage({ params }: { params: Promise<{ siteId
       description="Reverse-engineered interactive HTML forms. SiteMind maps input tags, constraints, client-side validations, and maps submission payloads to downstream API endpoints."
     >
       <div className="space-y-6">
-        
+
         {loading ? (
           <div className="flex min-h-[200px] items-center justify-center text-xs text-[var(--stitch-text-muted)]">
             Analyzing DOM form registries...
           </div>
         ) : error ? (
-          <div className="p-4 text-xs text-[var(--stitch-error)] text-center">{error}</div>
+          <div className="rounded-lg border border-[var(--stitch-error)]/30 bg-[var(--stitch-error)]/5 p-4 text-xs text-[var(--stitch-error)]">
+            {error}
+          </div>
         ) : forms.length === 0 ? (
           <div className="flex flex-col items-center justify-center min-h-[220px] rounded-xl border border-dashed border-[var(--stitch-border)] p-8 text-center text-xs text-[var(--stitch-text-muted)] bg-[var(--stitch-bg-elevated)]/20">
             <FormInput className="h-8 w-8 text-[var(--stitch-text-subtle)] mb-2" />
@@ -78,9 +75,8 @@ export default function FormsAnalyzerPage({ params }: { params: Promise<{ siteId
                 <Card
                   key={form.id}
                   onClick={() => setSelectedArtifact({ type: "form", data: form })}
-                  className={`border-[var(--stitch-border)] bg-[var(--stitch-bg-elevated)]/60 hover:bg-[var(--stitch-bg-elevated)] transition-all cursor-pointer shadow-sm ${
-                    isSelected ? "ring-1 ring-[var(--stitch-accent-cyan)] shadow-[var(--stitch-shadow-glow)]" : ""
-                  }`}
+                  className={`border-[var(--stitch-border)] bg-[var(--stitch-bg-elevated)]/60 hover:bg-[var(--stitch-bg-elevated)] transition-all cursor-pointer shadow-sm ${isSelected ? "ring-1 ring-[var(--stitch-accent-cyan)] shadow-[var(--stitch-shadow-glow)]" : ""
+                    }`}
                 >
                   <CardHeader className="pb-3 border-b border-[var(--stitch-border)]">
                     <div className="flex items-center justify-between">
@@ -97,7 +93,7 @@ export default function FormsAnalyzerPage({ params }: { params: Promise<{ siteId
                         </Badge>
                       </div>
                     </div>
-                    
+
                     <div className="mt-2 space-y-1">
                       <p className="text-[10px] font-semibold uppercase tracking-wider text-[var(--stitch-text-subtle)]">
                         Action endpoint
@@ -127,7 +123,7 @@ export default function FormsAnalyzerPage({ params }: { params: Promise<{ siteId
                                 </span>
                               )}
                             </div>
-                            
+
                             <div className="flex items-center gap-1.5 shrink-0">
                               <Badge variant="secondary" className="font-mono text-[9px] py-0">
                                 {f.field_type || "text"}

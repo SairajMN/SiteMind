@@ -19,7 +19,6 @@ import { SiteScaffold } from "@/components/layout/SiteScaffold";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { getDagRun, getJob, type DagRunDetail, type DagNodeSummary } from "@/lib/api-client";
-import { getMockSite } from "@/lib/mock-data";
 import {
   Play,
   CheckCircle,
@@ -137,35 +136,26 @@ export default function DagPage({ params }: { params: Promise<{ siteId: string }
   useEffect(() => {
     setLoading(true);
     setError(null);
-    
-    // Find URL parameter
+
     const urlParams = new URLSearchParams(window.location.search);
     const drId = urlParams.get("dag_run_id");
 
-    if (drId) {
-      getDagRun(drId)
-        .then((run) => {
-          setDagRun(run);
-          buildGraph(run, null);
-          setLoading(false);
-        })
-        .catch((e) => {
-          loadMockFallback();
-        });
-    } else {
-      loadMockFallback();
+    if (!drId) {
+      setError("No DAG run ID provided. Pass ?dag_run_id=<id> in the URL.");
+      setLoading(false);
+      return;
     }
 
-    function loadMockFallback() {
-      const mock = getMockSite(siteId);
-      if (mock && mock.dagRun) {
-        setDagRun(mock.dagRun);
-        buildGraph(mock.dagRun, null);
-      } else {
-        setError("Could not find pipeline records for this site.");
-      }
-      setLoading(false);
-    }
+    getDagRun(drId)
+      .then((run) => {
+        setDagRun(run);
+        buildGraph(run, null);
+        setLoading(false);
+      })
+      .catch((err: unknown) => {
+        setError(err instanceof Error ? err.message : "Failed to load DAG run.");
+        setLoading(false);
+      });
   }, [siteId]);
 
   // Handle graph assembly

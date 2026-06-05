@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { SiteScaffold } from "@/components/layout/SiteScaffold";
 import { getApiSpecs, type ApiSpecSummary } from "@/lib/api-client";
-import { getMockSite } from "@/lib/mock-data";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ConfidenceBadge } from "@/components/ConfidenceBadge";
@@ -45,20 +44,8 @@ export default function ApiSpecsPage({ params }: { params: Promise<{ siteId: str
         }
         setLoading(false);
       })
-      .catch(() => {
-        // Fallback to mock data
-        const mock = getMockSite(siteId);
-        if (mock && mock.apiSpecs) {
-          setSpecs(mock.apiSpecs);
-          if (mock.apiSpecs.length > 0 && mock.apiSpecs[0].spec_json) {
-            const paths = mock.apiSpecs[0].spec_json.paths as Record<string, any> | undefined;
-            if (paths && Object.keys(paths).length > 0) {
-              setActivePath(Object.keys(paths)[0]);
-            }
-          }
-        } else {
-          setError("Failed to load OpenAPI documents.");
-        }
+      .catch((err: unknown) => {
+        setError(err instanceof Error ? err.message : "Failed to load data.");
         setLoading(false);
       });
   }, [siteId]);
