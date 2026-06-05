@@ -1,0 +1,36 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "sitemind"
+version = "0.1.0"
+description = "SiteMind — website intelligence platform with custom DAG agent"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.18.4",
+    "asyncpg>=0.31.0",
+    "beautifulsoup4>=4.14.3",
+    "bleach>=6.3.0",
+    "fastapi>=0.136.3",
+    "httpx>=0.28.1",
+    "lxml>=6.1.1",
+    "playwright>=1.60.0",
+    "pydantic-settings>=2.14.1",
+    "python-multipart>=0.0.30",
+    "pyyaml>=6.0.3",
+    "qdrant-client>=1.12",
+    "redis>=8.0.0",
+    "slowapi>=0.1.9",
+    "sqlalchemy>=2.0.50",
+    "uvicorn[standard]>=0.48.0",
+]
+
+[project.scripts]
+sitemind-api = "app.main:run"
+sitemind-worker = "app.worker:main"
+sitemind-benchmark = "scripts.run_assignment_benchmarks:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["app", "agent", "scripts"]

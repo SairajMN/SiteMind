@@ -1,0 +1,124 @@
+{
+  "timestamp": "2026-06-02T18:18:07.705230+00:00",
+  "parts": {
+    "1_base_queries": [
+      {
+        "id": "hello",
+        "query": "hello",
+        "passed": true,
+        "wall_clock_ms": 0.3941659815609455,
+        "iterations": 4
+      },
+      {
+        "id": "A",
+        "query": "A",
+        "passed": true,
+        "wall_clock_ms": 0.21425000159069896,
+        "iterations": 4
+      },
+      {
+        "id": "I",
+        "query": "I",
+        "passed": true,
+        "wall_clock_ms": 0.18641696078702807,
+        "iterations": 4
+      },
+      {
+        "id": "J",
+        "query": "J",
+        "passed": true,
+        "wall_clock_ms": 0.19166601123288274,
+        "iterations": 4
+      },
+      {
+        "id": "K",
+        "query": "K",
+        "passed": true,
+        "wall_clock_ms": 0.17549999756738544,
+        "iterations": 4
+      }
+    ],
+    "2_parallel": {
+      "parallel_ok": true,
+      "max_ms": 551.1528750066645,
+      "sum_ms": 1153.4478339599445,
+      "layers": [
+        {
+          "lane": 0,
+          "nodes": [
+            {
+              "key": "planner",
+              "duration_ms": 0.023499946109950542,
+              "status": "succeeded"
+            }
+          ],
+          "max_ms": 0.023499946109950542,
+          "sum_ms": 0.023499946109950542
+        },
+        {
+          "lane": 1,
+          "nodes": [
+            {
+              "key": "branch_a",
+              "duration_ms": 351.13849997287616,
+              "status": "succeeded"
+            },
+            {
+              "key": "branch_b",
+              "duration_ms": 551.1528750066645,
+              "status": "succeeded"
+            },
+            {
+              "key": "branch_c",
+              "duration_ms": 251.15645898040384,
+              "status": "succeeded"
+            }
+          ],
+          "max_ms": 551.1528750066645,
+          "sum_ms": 1153.4478339599445
+        },
+        {
+          "lane": 2,
+          "nodes": [
+            {
+              "key": "merge",
+              "duration_ms": 0.017874990589916706,
+              "status": "succeeded"
+            }
+          ],
+          "max_ms": 0.017874990589916706,
+          "sum_ms": 0.017874990589916706
+        },
+        {
+          "lane": 3,
+          "nodes": [
+            {
+              "key": "formatter",
+              "duration_ms": 0.01787504879757762,
+              "status": "succeeded"
+            }
+          ],
+          "max_ms": 0.01787504879757762,
+          "sum_ms": 0.01787504879757762
+        }
+      ]
+    },
+    "3_critic": {
+      "pass_run_ok": true,
+      "critic_fail": true,
+      "recovery_spliced": true
+    },
+    "4_coder": {
+      "median_depth": 1.0,
+      "ok": true
+    },
+    "5_investigator": {
+      "ok": true,
+      "headings": [
+        "All products",
+        "Books"
+      ]
+    }
+  },
+  "all_passed": true
+}

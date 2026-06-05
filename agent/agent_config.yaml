@@ -1,0 +1,69 @@
+# SiteMind DAG agent configuration
+version: "1.0.0"
+problem: "Site intelligence — crawl, analyze, and answer with provenance"
+
+orchestrator:
+  max_parallel: 8
+  default_max_iterations: 10
+  default_max_wall_clock_sec: 30
+
+skills:
+  - name: planner
+    prompt_file: prompts/planner.md
+    description: Emits DAG structure and routes query kinds
+  - name: critic
+    prompt_file: prompts/critic.md
+    description: Verifies answers against evidence counts
+  - name: coder
+    prompt_file: prompts/coder.md
+    description: Emits Python for SandboxExecutor
+  - name: formatter
+    prompt_file: prompts/formatter.md
+    description: Formats final user-facing answers
+  - name: investigator
+    prompt_file: prompts/investigator.md
+    description: Deep single-page DOM/link inventory (not covered by coder/critic)
+
+# Assignment benchmark queries (verbatim)
+base_queries:
+  - id: hello
+    query: "hello"
+    max_iterations: 5
+    max_wall_clock_sec: 3
+  - id: A
+    query: "A"
+    max_iterations: 5
+    max_wall_clock_sec: 10
+  - id: I
+    query: "I"
+    max_iterations: 8
+    max_wall_clock_sec: 20
+  - id: J
+    query: "J"
+    max_iterations: 8
+    max_wall_clock_sec: 20
+  - id: K
+    query: "K"
+    max_iterations: 10
+    max_wall_clock_sec: 30
+
+assignment_queries:
+  parallel_fanout:
+    query: "Compute link, form, and endpoint totals in parallel for the crawled site."
+    min_parallel_branches: 3
+    max_wall_clock_sec: 15
+  critic_demo:
+    query: "How many HTML forms were discovered on this site?"
+    property: "form_count_matches_evidence"
+    max_wall_clock_sec: 20
+  coder_demo:
+    query: "What is the median depth of all crawled pages?"
+    max_wall_clock_sec: 15
+  investigator_demo:
+    query: "Investigate the root page: list heading texts and outbound link count."
+    max_wall_clock_sec: 15
+
+crawl:
+  default_depth: 2
+  default_page_budget: 15
+  mock_on_benchmark: true

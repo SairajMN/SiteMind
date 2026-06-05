@@ -1,0 +1,59 @@
+@import "../styles/stitch-tokens.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+
+  body {
+    color: var(--stitch-text);
+    background: var(--stitch-bg);
+    font-family: var(--font-geist-sans), system-ui, sans-serif;
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::selection {
+    background: var(--stitch-accent-cyan-dim);
+    color: var(--stitch-text);
+  }
+}
+
+@layer utilities {
+  .stitch-gradient-border {
+    position: relative;
+    background: var(--stitch-surface);
+    border-radius: var(--stitch-radius-lg);
+  }
+
+  .stitch-gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    padding: 1px;
+    background: linear-gradient(
+      135deg,
+      rgba(34, 211, 238, 0.35),
+      rgba(167, 139, 250, 0.35)
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box,
+      linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .text-gradient {
+    background: linear-gradient(90deg, var(--stitch-accent-cyan), var(--stitch-accent-violet));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
