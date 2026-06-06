@@ -648,7 +648,91 @@ npm install
 npm run dev                     # http://localhost:3000
 ```
 
-Open <http://localhost:3000>, paste a URL like `https://books.toscrape.com`, and watch the **12-node DAG** light up in real time.
+Open <http://localhost:3000> and try the example below.
+
+---
+
+## 🧪 Example: Crawling a Website
+
+### 7a. Using the Dashboard (UI)
+
+1. Open <http://localhost:3000>
+2. Paste a crawler-friendly URL into the input box, e.g.:
+   - `https://quotes.toscrape.com`
+   - `https://books.toscrape.com`
+   - `https://httpbin.org`
+3. Adjust **Crawl & Analyzer Settings** (max depth, same domain, etc.)
+4. Click **"Analyze website"**
+5. Watch the **12-node DAG** light up in real time
+6. Browse results in the sidebar: Overview → DAG → Knowledge Base → Auth Signals → Workflows → API Specs → Q&A → Evaluation
+
+### 7b. Using the API (curl)
+
+**Step 1 — Submit a site for analysis:**
+
+```bash
+curl -X POST http://localhost:8000/api/sites \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://quotes.toscrape.com", "goal": "Analyze website structure and workflows"}'
+```
+
+Response:
+
+```json
+{
+  "data": {
+    "site_id": "c0d2e7ac-...",
+    "crawl_job_id": "7585fc07-...",
+    "dag_run_id": "2d28994b-...",
+    "status": "queued"
+  }
+}
+```
+
+**Step 2 — Check crawl status** (wait ~30 seconds):
+
+```bash
+curl http://localhost:8000/api/sites/<site_id>
+```
+
+Look for `"latest_job_status": "completed"`.
+
+**Step 3 — View extracted pages:**
+
+```bash
+curl http://localhost:8000/api/sites/<site_id>/pages
+```
+
+Example result (60 pages from `quotes.toscrape.com`):
+
+| Path | Status | Auth Hint |
+|------|--------|-----------|
+| `/` | 200 | ✅ |
+| `/login` | 200 | ✅ |
+| `/page/2/` | 200 | ✅ |
+| `/author/Albert-Einstein` | 200 | ✅ |
+| `/tag/love/page/1/` | 200 | ✅ |
+
+**Step 4 — View endpoints:**
+
+```bash
+curl http://localhost:8000/api/sites/<site_id>/endpoints
+```
+
+**Step 5 — View in the dashboard:**
+
+Open <http://localhost:3000/sites/<site_id>> to explore all artifacts visually.
+
+### 7c. Sites That Work Well
+
+| Site | URL | Why |
+|------|-----|-----|
+| Quotes to Scrape | `https://quotes.toscrape.com` | Built for testing crawlers |
+| Books to Scrape | `https://books.toscrape.com` | Forms, pagination, search |
+| HTTPBin | `https://httpbin.org` | API endpoints, forms |
+| Playwright Demo | `https://demo.playwright.dev` | Rich interactive UI |
+
+> **Note:** Sites with Cloudflare or bot protection (e.g. NDTV, many news sites) will return `403 Access Denied`. Use crawler-friendly sites for testing.
 
 ---
 
