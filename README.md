@@ -671,9 +671,7 @@ Open <http://localhost:3000> and try the example below.
 **Step 1 — Submit a site for analysis:**
 
 ```bash
-curl -X POST http://localhost:8000/api/sites \
-  -H "Content-Type: application/json" \
-  -d '{"url": "https://quotes.toscrape.com", "goal": "Analyze website structure and workflows"}'
+curl -X POST http://localhost:8000/api/sites   -H "Content-Type: application/json"   -d '{"url": "https://quotes.toscrape.com", "goal": "Analyze website structure and workflows"}'
 ```
 
 Response:
@@ -732,7 +730,7 @@ Open <http://localhost:3000/sites/<site_id>> to explore all artifacts visually.
 | HTTPBin | `https://httpbin.org` | API endpoints, forms |
 | Playwright Demo | `https://demo.playwright.dev` | Rich interactive UI |
 
-> **Note:** Sites with Cloudflare or bot protection (e.g. NDTV, many news sites) will return `403 Access Denied`. Use crawler-friendly sites for testing.
+
 
 ---
 
