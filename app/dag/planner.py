@@ -48,6 +48,53 @@ def plan_site_crawl_dag(handlers: dict[str, Any]) -> tuple[list[NodeSpec], list[
     return nodes, edges
 
 
+def plan_comparison_dag(handlers: dict[str, Any]) -> tuple[list[NodeSpec], list[EdgeSpec]]:
+    """Planner for browser comparison tasks.
+
+    Planner -> BrowserComparison -> Distiller -> CriticAgent -> Formatter -> ReplayGenerator
+    """
+    nodes = [
+        NodeSpec("planner", "planner", handlers["comparison_planner"], lane=0),
+        NodeSpec("browser_comparison", "browser", handlers["browser_comparison"], lane=1),
+        NodeSpec("distiller", "distiller", handlers["distiller"], lane=2),
+        NodeSpec("critic_agent", "critic", handlers["critic_agent"], lane=3),
+        NodeSpec("formatter", "formatter", handlers["comparison_formatter"], lane=4),
+        NodeSpec("replay_generator", "replay", handlers["replay_generator"], lane=5),
+    ]
+    edges = [
+        EdgeSpec("planner", "browser_comparison"),
+        EdgeSpec("browser_comparison", "distiller"),
+        EdgeSpec("browser_comparison", "critic_agent"),
+        EdgeSpec("distiller", "critic_agent"),
+        EdgeSpec("distiller", "formatter"),
+        EdgeSpec("browser_comparison", "formatter"),
+        EdgeSpec("critic_agent", "formatter"),
+        EdgeSpec("formatter", "replay_generator"),
+    ]
+    return nodes, edges
+
+
+def plan_web_search_dag(handlers: dict[str, Any]) -> tuple[list[NodeSpec], list[EdgeSpec]]:
+    """Web search DAG: Planner -> Searcher -> Visitor -> VLM Analyzer -> Formatter."""
+    nodes = [
+        NodeSpec("planner", "planner", handlers["web_search_planner"], lane=0),
+        NodeSpec("searcher", "web_search", handlers["web_searcher"], lane=1),
+        NodeSpec("visitor", "web_visit", handlers["web_page_visitor"], lane=2),
+        NodeSpec("vlm", "vlm_analysis", handlers["web_vlm_analyzer"], lane=3),
+        NodeSpec("formatter", "formatter", handlers["web_search_formatter"], lane=4),
+    ]
+    edges = [
+        EdgeSpec("planner", "searcher"),
+        EdgeSpec("planner", "visitor"),
+        EdgeSpec("planner", "vlm"),
+        EdgeSpec("planner", "formatter"),
+        EdgeSpec("searcher", "visitor"),
+        EdgeSpec("visitor", "vlm"),
+        EdgeSpec("vlm", "formatter"),
+    ]
+    return nodes, edges
+
+
 def plan_agent_query_dag(
     handlers: dict[str, Any], query_kind: str
 ) -> tuple[list[NodeSpec], list[EdgeSpec]]:

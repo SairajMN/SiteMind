@@ -8,6 +8,24 @@ from typing import Any
 
 from agent.sandbox_executor import SandboxError, execute_coder
 
+# Browser comparison imports
+from agent.comparison_handlers import (  # noqa: F401
+    node_browser_comparison,
+    node_comparison_formatter,
+    node_comparison_planner,
+    node_critic_agent,
+    node_distiller,
+    node_replay_generator,
+)
+from agent.metrics import estimate_cost, get_metrics_collector
+from agent.web_search_handlers import (  # noqa: F401
+    node_web_search_planner,
+    node_web_searcher,
+    node_web_page_visitor,
+    node_web_vlm_analyzer,
+    node_web_search_formatter,
+)
+
 # Deterministic Coder template for median depth (no LLM required for benchmark)
 MEDIAN_DEPTH_CODE = '''
 def solve(context):
@@ -256,6 +274,19 @@ def build_handlers() -> dict[str, Any]:
         "coder": node_coder,
         "sandbox": node_sandbox,
         "investigator": node_investigator,
+        # Comparison DAG handlers
+        "comparison_planner": node_comparison_planner,
+        "browser_comparison": node_browser_comparison,
+        "distiller": node_distiller,
+        "critic_agent": node_critic_agent,
+        "comparison_formatter": node_comparison_formatter,
+        "replay_generator": node_replay_generator,
+        # Web Search DAG handlers
+        "web_search_planner": node_web_search_planner,
+        "web_searcher": node_web_searcher,
+        "web_page_visitor": node_web_page_visitor,
+        "web_vlm_analyzer": node_web_vlm_analyzer,
+        "web_search_formatter": node_web_search_formatter,
     }
 
 

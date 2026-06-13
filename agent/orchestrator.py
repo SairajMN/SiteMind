@@ -10,7 +10,7 @@ import yaml
 from agent.handlers import build_handlers, mock_evidence
 from app.dag.engine import DagEngine
 from app.dag.models import DagRunResult, NodeState, NodeStatus
-from app.dag.planner import plan_agent_query_dag
+from app.dag.planner import plan_agent_query_dag, plan_comparison_dag, plan_web_search_dag
 
 logger = logging.getLogger(__name__)
 CONFIG_PATH = Path(__file__).parent / "agent_config.yaml"
@@ -19,6 +19,38 @@ CONFIG_PATH = Path(__file__).parent / "agent_config.yaml"
 def load_config() -> dict[str, Any]:
     with CONFIG_PATH.open(encoding="utf-8") as f:
         return yaml.safe_load(f)
+
+
+async def run_web_search(
+    query: str,
+    *,
+    max_iterations: int | None = None,
+    max_wall_clock_sec: float | None = None,
+) -> DagRunResult:
+    """Run a web search + VLM analysis query through the DAG."""
+    config = load_config()
+    orch = config.get("orchestrator", {})
+    handlers = build_handlers()
+    nodes, edges = plan_web_search_dag(handlers)
+
+    ctx: dict[str, Any] = {
+        "query": query,
+        "query_kind": "web_search",
+    }
+
+    engine = DagEngine(max_parallel=orch.get("max_parallel", 8))
+    result = await engine.run(query, nodes, edges, ctx)
+
+    max_iter = max_iterations or orch.get("default_max_iterations", 10)
+    max_wall = max_wall_clock_sec or orch.get("default_max_wall_clock_sec", 120)
+    result.metadata["bounds"] = {
+        "max_iterations": max_iter,
+        "max_wall_clock_sec": max_wall,
+        "iterations_ok": result.iteration_count <= max_iter,
+        "wall_clock_ok": (result.wall_clock_ms / 1000) <= max_wall,
+    }
+    result.metadata["query_kind"] = "web_search"
+    return result
 
 
 def _classify_query(query: str, config: dict[str, Any]) -> tuple[str, str | None]:
@@ -44,6 +76,11 @@ def _classify_query(query: str, config: dict[str, Any]) -> tuple[str, str | None
         return "coder", None
     if "investigate" in q.lower():
         return "investigator", None
+    # Comparison queries
+    comparison_keywords = ["compare", "comparison", "vs", "versus", "top models",
+                           "top products", "sorted by", "rank", "huggingface"]
+    if any(kw in q.lower() for kw in comparison_keywords):
+        return "comparison", None
     return "base", q if q in ("hello", "A", "I", "J", "K") else "hello"
 
 
@@ -60,6 +97,29 @@ async def run_query(
     query_kind, base_id = _classify_query(query, config)
 
     handlers = build_handlers()
+    if query_kind == "comparison":
+        nodes, edges = plan_comparison_dag(handlers)
+        ctx: dict[str, Any] = {
+            "evidence": evidence or mock_evidence(),
+            "query_kind": query_kind,
+            "base_id": base_id,
+            "critic_force_fail": critic_force_fail,
+        }
+        engine = DagEngine(max_parallel=orch.get("max_parallel", 8))
+        result = await engine.run(query, nodes, edges, ctx)
+
+        max_iter = max_iterations or orch.get("default_max_iterations", 10)
+        max_wall = max_wall_clock_sec or orch.get("default_max_wall_clock_sec", 30)
+        result.metadata["bounds"] = {
+            "max_iterations": max_iter,
+            "max_wall_clock_sec": max_wall,
+            "iterations_ok": result.iteration_count <= max_iter,
+            "wall_clock_ok": (result.wall_clock_ms / 1000) <= max_wall,
+        }
+        result.metadata["query_kind"] = query_kind
+        result.metadata["critic_force_fail"] = critic_force_fail
+        return result
+
     nodes, edges = plan_agent_query_dag(handlers, query_kind)
 
     ctx: dict[str, Any] = {

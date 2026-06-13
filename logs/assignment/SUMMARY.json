@@ -1,105 +1,105 @@
 {
-  "timestamp": "2026-06-02T18:18:07.705230+00:00",
+  "timestamp": "2026-06-11T07:52:04.016696+00:00",
   "parts": {
     "1_base_queries": [
       {
         "id": "hello",
         "query": "hello",
         "passed": true,
-        "wall_clock_ms": 0.3941659815609455,
+        "wall_clock_ms": 0.367750006262213,
         "iterations": 4
       },
       {
         "id": "A",
         "query": "A",
         "passed": true,
-        "wall_clock_ms": 0.21425000159069896,
+        "wall_clock_ms": 0.20979199325665832,
         "iterations": 4
       },
       {
         "id": "I",
         "query": "I",
         "passed": true,
-        "wall_clock_ms": 0.18641696078702807,
+        "wall_clock_ms": 0.2097499673254788,
         "iterations": 4
       },
       {
         "id": "J",
         "query": "J",
         "passed": true,
-        "wall_clock_ms": 0.19166601123288274,
+        "wall_clock_ms": 0.24345796555280685,
         "iterations": 4
       },
       {
         "id": "K",
         "query": "K",
         "passed": true,
-        "wall_clock_ms": 0.17549999756738544,
+        "wall_clock_ms": 0.23708399385213852,
         "iterations": 4
       }
     ],
     "2_parallel": {
       "parallel_ok": true,
-      "max_ms": 551.1528750066645,
-      "sum_ms": 1153.4478339599445,
+      "max_ms": 551.2393329991028,
+      "sum_ms": 1153.7028739694506,
       "layers": [
         {
           "lane": 0,
           "nodes": [
             {
               "key": "planner",
-              "duration_ms": 0.023499946109950542,
+              "duration_ms": 0.030416005756706,
               "status": "succeeded"
             }
           ],
-          "max_ms": 0.023499946109950542,
-          "sum_ms": 0.023499946109950542
+          "max_ms": 0.030416005756706,
+          "sum_ms": 0.030416005756706
         },
         {
           "lane": 1,
           "nodes": [
             {
               "key": "branch_a",
-              "duration_ms": 351.13849997287616,
+              "duration_ms": 351.19679098716006,
               "status": "succeeded"
             },
             {
               "key": "branch_b",
-              "duration_ms": 551.1528750066645,
+              "duration_ms": 551.2393329991028,
               "status": "succeeded"
             },
             {
               "key": "branch_c",
-              "duration_ms": 251.15645898040384,
+              "duration_ms": 251.26674998318776,
               "status": "succeeded"
             }
           ],
-          "max_ms": 551.1528750066645,
-          "sum_ms": 1153.4478339599445
+          "max_ms": 551.2393329991028,
+          "sum_ms": 1153.7028739694506
         },
         {
           "lane": 2,
           "nodes": [
             {
               "key": "merge",
-              "duration_ms": 0.017874990589916706,
+              "duration_ms": 0.007916998583823442,
               "status": "succeeded"
             }
           ],
-          "max_ms": 0.017874990589916706,
-          "sum_ms": 0.017874990589916706
+          "max_ms": 0.007916998583823442,
+          "sum_ms": 0.007916998583823442
         },
         {
           "lane": 3,
           "nodes": [
             {
               "key": "formatter",
-              "duration_ms": 0.01787504879757762,
+              "duration_ms": 0.009540992323309183,
               "status": "succeeded"
             }
           ],
-          "max_ms": 0.01787504879757762,
-          "sum_ms": 0.01787504879757762
+          "max_ms": 0.009540992323309183,
+          "sum_ms": 0.009540992323309183
         }
       ]
     },

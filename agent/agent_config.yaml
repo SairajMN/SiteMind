@@ -23,6 +23,15 @@ skills:
   - name: investigator
     prompt_file: prompts/investigator.md
     description: Deep single-page DOM/link inventory (not covered by coder/critic)
+  - name: browser_comparison
+    prompt_file: prompts/comparison_planner.md
+    description: Real browser comparison with multi-path execution
+  - name: distiller
+    description: Converts raw browser output into normalized comparison items
+  - name: critic_agent
+    description: Validates comparison quality with 6 checks
+  - name: replay_generator
+    description: Generates self-contained HTML replay report
 
 # Assignment benchmark queries (verbatim)
 base_queries:

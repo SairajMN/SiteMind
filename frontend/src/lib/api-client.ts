@@ -350,3 +350,109 @@ export async function askQuestion(siteId: string, body: AskRequest): Promise<Ask
     body: JSON.stringify(body),
   });
 }
+// --- Agent Comparison ---
+export type ComparisonRequest = {
+  query: string;
+  max_wall_clock_sec?: number;
+};
+
+export type ComparisonNode = {
+  key: string;
+  type?: string;
+  status: string;
+  duration_ms?: number;
+  lane?: number;
+  error?: string;
+  output_preview?: Record<string, unknown> | null;
+};
+
+export type ComparisonItem = {
+  rank: string;
+  name: string;
+  likes: string;
+  downloads: string;
+  rating: string;
+  price: string;
+  source: string;
+};
+
+export type BrowserAction = {
+  step: number;
+  timestamp: string;
+  action: string;
+  target: string;
+  url: string;
+  status: string;
+  screenshot?: string;
+  duration_ms?: number;
+};
+
+export type ComparisonResult = {
+  status: string;
+  query: string;
+  wall_clock_ms: number;
+  iterations: number;
+  nodes: ComparisonNode[];
+  final_answer?: string;
+  critic_status?: string;
+  comparison_table: ComparisonItem[];
+  replay_filepath?: string;
+  browser_actions: BrowserAction[];
+  screenshots: Record<string, unknown>[];
+  selected_path?: string;
+  metrics: Record<string, unknown>;
+};
+
+export async function runComparison(body: ComparisonRequest): Promise<ComparisonResult> {
+  return apiFetch<ComparisonResult>("/agent/comparison", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}
+
+// ── Web Search (VLM + DOM) ──────────────────────────────────────────
+
+export type WebSearchRequest = {
+  query: string;
+  max_wall_clock_sec?: number;
+};
+
+export type WebSearchNode = {
+  key: string;
+  type: string;
+  status: string;
+  duration_ms?: number;
+  lane: number;
+  error?: string;
+  output_preview?: Record<string, unknown>;
+};
+
+export type WebSearchItem = {
+  rank: string;
+  name: string;
+  price: string;
+  rating: string;
+  specs: string;
+  source: string;
+  page_title: string;
+};
+
+export type WebSearchResult = {
+  status: string;
+  query: string;
+  wall_clock_ms: number;
+  iterations: number;
+  nodes: WebSearchNode[];
+  final_answer?: string;
+  comparison_table: WebSearchItem[];
+  total_items: number;
+  total_pages: number;
+  metrics: Record<string, unknown>;
+};
+
+export async function runWebSearch(body: WebSearchRequest): Promise<WebSearchResult> {
+  return apiFetch<WebSearchResult>("/agent/web-search", {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+}

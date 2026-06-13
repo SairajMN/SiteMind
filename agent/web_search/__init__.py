@@ -1,0 +1,1 @@
+"""Web search with VLM agent module — searches the web, captures pages, analyzes with VLM + DOM."""

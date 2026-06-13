@@ -10,6 +10,7 @@ from slowapi.middleware import SlowAPIMiddleware
 
 from app.api import (
     routes_api_specs,
+    routes_comparison,
     routes_dag,
     routes_endpoints,
     routes_evaluations,
@@ -19,6 +20,7 @@ from app.api import (
     routes_pages,
     routes_qa,
     routes_sites,
+    routes_web_search,
     routes_workflows,
 )
 from app.core.config import get_settings
@@ -92,6 +94,8 @@ def create_app() -> FastAPI:
     app.include_router(routes_api_specs.router, prefix="/api")
     app.include_router(routes_evaluations.router, prefix="/api")
     app.include_router(routes_dag.router, prefix="/api")
+    app.include_router(routes_comparison.router, prefix="/api")
+    app.include_router(routes_web_search.router, prefix="/api")
 
     return app
 

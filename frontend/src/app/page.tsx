@@ -107,8 +107,8 @@ export default function LandingPage() {
             </span>
           </div>
           <div className="flex items-center gap-4 text-xs text-[var(--stitch-text-muted)]">
+            <span className="hover:text-[var(--stitch-text)] cursor-pointer" onClick={() => router.push("/compare")}>Compare</span>
             <span className="hover:text-[var(--stitch-text)] cursor-pointer">Documentation</span>
-            <span className="hover:text-[var(--stitch-text)] cursor-pointer">API Specs</span>
             <Button variant="outline" size="sm" className="h-7 text-xs" onClick={() => router.push("/settings")}>
               Settings
             </Button>

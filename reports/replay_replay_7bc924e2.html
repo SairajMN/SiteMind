@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Browser Comparison Replay Report</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f7fa; color: #1a1a2e; line-height: 1.6; }
+.container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+.header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px 20px; border-radius: 12px; margin-bottom: 30px; }
+.header h1 { font-size: 28px; margin-bottom: 8px; }
+.header .meta { opacity: 0.9; font-size: 14px; }
+.section { background: white; border-radius: 10px; padding: 24px; margin-bottom: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+.section h2 { font-size: 20px; margin-bottom: 16px; color: #333; border-bottom: 2px solid #f0f0f0; padding-bottom: 8px; }
+.badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.badge-success { background: #d4edda; color: #155724; }
+.badge-failure { background: #f8d7da; color: #721c24; }
+.badge-warning { background: #fff3cd; color: #856404; }
+table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid #eee; font-size: 14px; }
+th { background: #f8f9fa; font-weight: 600; color: #555; }
+tr:hover { background: #f8f9fa; }
+.action-log { font-family: 'SF Mono', 'Cascadia Code', monospace; font-size: 13px; }
+.action-log .step { color: #667eea; font-weight: 600; }
+.action-log .action { color: #e83e8c; font-weight: 500; }
+.action-log .success { color: #28a745; }
+.action-log .failure { color: #dc3545; }
+.action-log .target { color: #6c757d; }
+.screenshot-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 16px; margin-top: 12px; }
+.screenshot-card { border: 1px solid #e0e0e0; border-radius: 8px; overflow: hidden; }
+.screenshot-card img { width: 100%; height: auto; display: block; }
+.screenshot-card .caption { padding: 8px 12px; font-size: 12px; color: #666; background: #fafafa; }
+.timeline { position: relative; padding-left: 30px; }
+.timeline-item { position: relative; padding-bottom: 20px; border-left: 2px solid #e0e0e0; padding-left: 20px; margin-left: 10px; }
+.timeline-item::before { content: ''; position: absolute; left: -6px; top: 4px; width: 12px; height: 12px; border-radius: 50%; background: #667eea; }
+.timeline-item .time { font-size: 12px; color: #999; }
+.timeline-item .event { font-size: 14px; margin-top: 4px; }
+.comparison-card { border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px; margin-bottom: 12px; }
+.comparison-card h3 { font-size: 16px; margin-bottom: 8px; }
+.comparison-card .meta { font-size: 13px; color: #666; }
+.comparison-card .meta span { display: inline-block; margin-right: 16px; }
+.check-list { list-style: none; }
+.check-list li { padding: 8px 0; border-bottom: 1px solid #f0f0f0; display: flex; align-items: center; gap: 8px; }
+.check-list .check-icon { font-size: 18px; }
+.metrics-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px; }
+.metric-card { background: #f8f9fa; border-radius: 8px; padding: 16px; text-align: center; }
+.metric-card .value { font-size: 28px; font-weight: 700; color: #667eea; }
+.metric-card .label { font-size: 12px; color: #666; margin-top: 4px; }
+.path-visualization { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; padding: 12px 0; }
+.path-node { background: #e8eaf6; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 500; }
+.path-node.selected { background: #667eea; color: white; }
+.path-node.failed { background: #f8d7da; color: #721c24; }
+.path-arrow { color: #999; font-size: 18px; }
+.collapsible { cursor: pointer; user-select: none; }
+.collapsible::after { content: ' [+]'; color: #667eea; font-size: 12px; }
+.collapsible.active::after { content: ' [-]'; }
+.collapsible-content { display: none; padding: 12px 0; }
+.collapsible-content.active { display: block; }
+@media (max-width: 768px) {
+  .screenshot-grid { grid-template-columns: 1fr; }
+  .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+}
+</style>
+</head>
+<body>
+<div class="container">
+<div class="header">
+<h1>Browser Comparison Replay Report — Compare top 3 Hugging Face text-generation models sorted by </h1>
+<div class="meta">Query: <strong>Compare top 3 Hugging Face text-generation models sorted by likes</strong> &middot; Status: <span class="badge badge-success">PASSED</span></div>
+<div class="meta">Generated: 2026-06-12T20:51:23.209140+00:00 &middot; Session: replay_7bc924e2</div>
+</div>
+
+<div class="section">
+<h2>1. Original User Goal</h2>
+<p style="font-size:16px;color:#555;">Compare top 3 Hugging Face text-generation models sorted by likes</p>
+</div>
+
+<div class="section">
+<h2>2. Planner DAG Visualization</h2>
+<div class="path-visualization">
+  <span class="path-node selected">Planner</span>
+  <span class="path-arrow">&rarr;</span>
+  <span class="path-node selected">Browser</span>
+  <span class="path-arrow">&rarr;</span>
+  <span class="path-node ">Distiller</span>
+  <span class="path-arrow">&rarr;</span>
+  <span class="path-node selected">Critic</span>
+  <span class="path-arrow">&rarr;</span>
+  <span class="path-node selected">Formatter</span>
+</div>
+<table>
+<tr><th>Node</th><th>Duration</th><th>Status</th><th>Path</th></tr>
+<tr><td>Planner</td><td>0 ms</td><td><span class="badge badge-success">succeeded</span></td><td>&mdash;</td></tr>
+<tr><td>Browser Comparison</td><td>5959 ms</td><td><span class="badge badge-success">succeeded</span></td><td>UNKNOWN</td></tr>
+<tr><td>Distiller</td><td>0 ms</td><td><span class="badge badge-failure">failed</span></td><td>&mdash;</td></tr>
+<tr><td>Critic</td><td>0 ms</td><td><span class="badge badge-success">PASSED</span></td><td>&mdash;</td></tr>
+<tr><td>Formatter</td><td>0 ms</td><td><span class="badge badge-success">succeeded</span></td><td>&mdash;</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>3. Browser Path Chosen</h2>
+<p><strong>Selected Path:</strong> UNKNOWN</p>
+<p><strong>Rationale:</strong> Automatic path selection.</p>
+<div class="path-visualization">
+  <span class="path-node path-node ">Extract</span>
+  <span class="path-arrow">&rarr;</span>
+  <span class="path-node path-node ">Deterministic</span>
+  <span class="path-arrow">&rarr;</span>
+  <span class="path-node path-node ">A11y</span>
+  <span class="path-arrow">&rarr;</span>
+  <span class="path-node path-node ">Vision</span>
+  <span class="path-arrow">&rarr;</span>
+  <span class="path-node path-node ">Blocked</span>
+</div>
+</div>
+
+<div class="section">
+<h2>4. Browser Actions Taken (0)</h2>
+<table>
+<tr><th>Step</th><th>Action</th><th>Target</th><th>URL</th><th>Status</th><th>Screenshot</th></tr>
+
+</table>
+</div>
+
+<div class="section">
+<h2>5. Screenshots &amp; Page States</h2>
+<div class="screenshot-grid">
+<p style="color:#999;">No screenshots captured.</p>
+</div>
+</div>
+
+<div class="section">
+<h2>6. Extracted Data</h2>
+<p style="color:#999;">No items extracted.</p>
+</div>
+
+<div class="section">
+<h2>7. Critic Evaluation</h2>
+<p><strong>Status:</strong> <span class="badge badge-success">PASSED</span></p>
+<p><strong>Checks:</strong> 0/6 passed</p>
+<ul class="check-list">
+
+</ul>
+
+</div>
+
+<div class="section">
+<h2>8. Final Comparison Table</h2>
+<table>
+<tr><th>Rank</th><th>Name</th><th>Likes</th><th>Downloads</th><th>Rating</th><th>Price</th><th>Source</th></tr>
+<tr><td colspan="7" style="text-align:center;color:#999;">No comparison data available.</td></tr>
+</table>
+</div>
+
+<div class="section">
+<h2>9. Execution Timeline</h2>
+<div class="timeline">
+
+</div>
+</div>
+
+<div class="section">
+<h2>10. Metrics</h2>
+<div class="metrics-grid">
+  <div class="metric-card"><div class="value">5959</div><div class="label">Total Duration (ms)</div></div>
+  <div class="metric-card"><div class="value">0</div><div class="label">Browser Actions</div></div>
+  <div class="metric-card"><div class="value">0</div><div class="label">Items Extracted</div></div>
+  <div class="metric-card"><div class="value">0.00</div><div class="label">Confidence</div></div>
+  <div class="metric-card"><div class="value">0</div><div class="label">Recovery Attempts</div></div>
+  <div class="metric-card"><div class="value">0/6</div><div class="label">Critic Pass Rate</div></div>
+</div>
+</div>
+
+<div class="section">
+<h2>11. Recovery Attempts</h2>
+<p style="color:#999;">No recovery attempts were needed.</p>
+</div>
+
+<div class="section">
+<h2>12. Final Status</h2>
+<p style="font-size:18px;">
+<strong>Overall:</strong> <span class="badge badge-success">PASSED</span>
+</p>
+<p style="font-size:14px;color:#666;">All checks passed. The comparison was successful with valid evidence.</p>
+</div>
+
+</div>
+<script>
+document.querySelectorAll('.collapsible').forEach(el => {
+  el.addEventListener('click', function() {
+    this.classList.toggle('active');
+    this.nextElementSibling.classList.toggle('active');
+  });
+});
+</script>
+</body>
+</html>
